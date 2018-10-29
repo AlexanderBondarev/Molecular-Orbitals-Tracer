@@ -186,36 +186,5 @@ fclose($flog);
 fclose($fout);
 fclose($fmap);
 
-
-//         *               RELAXED SURFACE SCAN STEP   2               *
-//         *                                                           *
-//         *                 Bond (  8,   2)  :   0.91002506           *
-//FINAL SINGLE POINT ENERGY      -340.398846304393
-
-//	    printf("  (%.8f %.8f %.8f) [%f %f] [%f %f] [%f %f]\n",abs($y11-$y21),abs($y12-$y22),abs($y13-$y23),$y11,$y21,$y12,$y22,$y13,$y23);
-//	    printf("  ang %f %f %f %f\n",$ang1,$ang2,$ang3,$ang4);
-//        if( vangle(1.0,$y11-$y,1.0,$y-$y13) < vangle(1.0,$y11-$y,1.0,$y-$y23) )
-//	    if( vangle(1.0,$y21-$y,1.0,$y-$y23) < vangle(1.0,$y21-$y,1.0,$y-$y13) ) {
-/*		if( ($y22-$y21)<0 && ($y23-$y22)>0 )
-		if( ($y12-$y11)>0 && ($y13-$y12)<0 ) {
-		if( abs($y12-$y22)<abs($y13-$y23) ) {
-		var_dump(0.000002<0.000002);
-		var_dump(abs($y12-$y22)<abs($y11-$y21));
-		var_dump(abs($y12-$y22)<abs($y13-$y23));
-		var_dump(abs($y12-$y22));
-		var_dump($y12);
-		var_dump($y22);
-		var_dump(abs($y11-$y21));
-		var_dump($y11);
-		var_dump($y21);
-		var_dump(abs($y12-$y22));
-		var_dump($y12);
-		var_dump($y22);
-		var_dump(abs($y13-$y23));
-		var_dump($y13);
-		var_dump($y23);*/
-//	if( $ang1 < $ang2 )
-//	    if( $ang3 < $ang4 ) {
-
 ?>
 
