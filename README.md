@@ -1,2 +1,2 @@
 # Molecular-Orbitals-Tracer
-The Software for tracing molecular orbitals.
+This software is a computational method for tracing molecular orbitals.
