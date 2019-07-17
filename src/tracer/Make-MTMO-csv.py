@@ -56,8 +56,8 @@ def find_HOMO_LUMO(MO, mOCC) :
 
 def read_MOC(name):
     flagstr = 'MOLECULAR ORBITALS'
-    morb = []; mocc = []; step = 0;
-    mbasis = [];
+    morb = []; mocc = []; mE = []; step = 0;
+    mbasis = []; mSumE = [];
     with open( '%s.out' % (name), 'r') as f:
 	line = f.readline()
 	while line:
@@ -65,10 +65,13 @@ def read_MOC(name):
 		step = step + 1
 		morb.append([])
 		mocc.append([])
+		mE.append([])
+		mSumE.append(0.0)
 	    if flagstr in line :
 #		print step, line
 		morb[step-1] = []
 		mocc[step-1] = []
+		mE[step-1] = []
 		line = f.readline()
 		line = f.readline()
 		while len(line.strip())>0 :
@@ -85,6 +88,8 @@ def read_MOC(name):
 			mo = map(int, map(float, oline.strip().split()))
 			for i in range(len(mi)) :
 			    morb[step-1].append([])
+			    mocc[step-1].append(mo[i])
+			    mE[step-1].append(me[i])
 #			print mi
 #			print me
 #			print mo
@@ -108,8 +113,11 @@ def read_MOC(name):
 #			m[n-1].append(float(lst[2]))
 #			occ[n-1].append(float(lst[1]))
 	    line = f.readline()
+	    if 'FINAL SINGLE POINT ENERGY' in line :
+		mSumE[step-1] = float(line[26:])
+#		print step-1, ' E = ', float(line[26:])
     f.close()
-    return step, len(m[0]), morb, mocc, mbasis
+    return step, len(morb[0]), morb, mE, mSumE, mocc, mbasis
 
 #MOLECULAR ORBITALS
 #------------------
@@ -119,8 +127,11 @@ def read_MOC(name):
 #                  --------  --------  --------  --------  --------  --------
 #  0H   1s         0.001495 -0.212017 -0.385740  0.000000  0.000000  0.177599
 #  0H   2s        -0.003017 -0.007250 -0.061689 -0.000000  0.000000  1.235739
+#FINAL SINGLE POINT ENERGY      -100.314764415265
 
 
+def GetAtomNumber(s) :
+    return int(re.findall(r'[0-9]+', s)[0])
 
 ### Main part
 
@@ -131,14 +142,18 @@ nMO, nOrb, mMO, mOCC = read_MO(sysname)
 #print nE, minE
 print nMO, nOrb
 
-nMOC, nOrb, mMOC, mOCC, mbasis = read_MOC(sysname)
+nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis = read_MOC(sysname)
 
 for i in range(len(mMOC)) :
-    print '\nStep: %ld' % (i+1)
+    print '\nStep: %ld  E=%f' % (i+1, mSumE[i])
     for j in range(len(mMOC[i])) :
-	print j, mMOC[i][j]
+	print j, mE[i][j], mOCC[i][j], mMOC[i][j]
 
-print '\nBasis: ', mbasis
+print '\nBasis: ', mBasis
+print '         ', map(GetAtomNumber, mBasis)
+print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
+
+#print mOCC
 
 #print sys.getsizeof(mMOC)
 
