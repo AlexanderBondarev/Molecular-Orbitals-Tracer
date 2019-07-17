@@ -56,19 +56,19 @@ def find_HOMO_LUMO(MO, mOCC) :
 
 def read_MOC(name):
     flagstr = 'MOLECULAR ORBITALS'
-    morb = []; mocc = []; n = 0; i = 0;
+    morb = []; mocc = []; step = 0;
     mbasis = [];
     with open( '%s.out' % (name), 'r') as f:
 	line = f.readline()
 	while line:
 	    if 'SURFACE SCAN STEP' in line :
-		n = n+1
+		step = step + 1
 		morb.append([])
 		mocc.append([])
 	    if flagstr in line :
-		print line, n
-		morb[n-1] = []
-		mocc[n-1] = []
+#		print step, line
+		morb[step-1] = []
+		mocc[step-1] = []
 		line = f.readline()
 		line = f.readline()
 		while len(line.strip())>0 :
@@ -83,9 +83,11 @@ def read_MOC(name):
 			mi = map(int, iline.strip().split())
 			me = map(float, eline.strip().split())
 			mo = map(int, map(float, oline.strip().split()))
-			print mi
-			print me
-			print mo
+			for i in range(len(mi)) :
+			    morb[step-1].append([])
+#			print mi
+#			print me
+#			print mo
 			mbasis = []
 			line = f.readline()
 			while len((line[:9]).strip())>0 :
@@ -94,7 +96,11 @@ def read_MOC(name):
 			    b = m[1]
 			    mbasis.append('%s-%s' % (a, b))
 			    mc =  map(float, m[2:])
-			    print a, b, mc
+#			    print a, b, mc
+			    for i in range(len(mc)) :
+				orb = mi[i]
+				morb[step-1][orb].append(mc[i])
+#				print ' %ld %ld %f' % (i, mi[i], mc[i])
 			    line = f.readline()
 #		    lst = line.strip().split()
 #		    if len(lst)>1 : 
@@ -103,7 +109,7 @@ def read_MOC(name):
 #			occ[n-1].append(float(lst[1]))
 	    line = f.readline()
     f.close()
-    return n, len(m[0]), morb, mocc, mbasis
+    return step, len(m[0]), morb, mocc, mbasis
 
 #MOLECULAR ORBITALS
 #------------------
@@ -127,7 +133,14 @@ print nMO, nOrb
 
 nMOC, nOrb, mMOC, mOCC, mbasis = read_MOC(sysname)
 
-print mbasis
+for i in range(len(mMOC)) :
+    print '\nStep: %ld' % (i+1)
+    for j in range(len(mMOC[i])) :
+	print j, mMOC[i][j]
+
+print '\nBasis: ', mbasis
+
+#print sys.getsizeof(mMOC)
 
 #fMO = open( '%s-E-MO.csv' % (sysname), 'w')
 #fMO.write(' N; E; HOMO; LUMO;')
