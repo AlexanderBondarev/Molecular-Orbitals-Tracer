@@ -133,6 +133,55 @@ def read_MOC(name):
 def GetAtomNumber(s) :
     return int(re.findall(r'[0-9]+', s)[0])
 
+def CompareOrb(a,b) :
+    Q = 0.0
+    for i in range(min(len(a), len(b))) :
+	D = abs(a[i])-abs(b[i])
+	Q = Q + D*D
+    return Q
+
+def TraceOrb(n, m, mE) :
+    a = m[0][n]
+    mr = []
+    for step in range(0,len(m)) :
+	b = m[step][0]
+	Qmin = CompareOrb(a,b)
+	Nmin = 0
+	mQ = []
+	for i in range(1,len(m[step])) :
+	    b = m[step][i]
+	    Q = CompareOrb(a,b)
+	    mQ.append(Q)
+	    if Q<Qmin :
+		Nmin = i
+		Qmin = Q
+	
+	mr.append(Nmin)
+	a = m[step][Nmin]
+#	print step, n, Nmin, Qmin, mE[step][Nmin]
+#	print mQ
+    return mr
+
+def TraceAllOrb(m, mE) :
+    mr = []
+    for i in range(len(m[0][0])) :
+	mr.append(TraceOrb(i, m, mE))
+    return mr
+
+def PrintTRE(m, mE, sysname) :
+    f = open( '%s-trace.csv' % (sysname), 'w')
+    f.write('Step;')
+    for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
+    f.write('\n')
+    for step in range(len(mE)) :
+	f.write('%ld;' % (step+1))
+	for i in range(len(mE[0])) :
+	    f.write(' %f;' % (mE[step][i]))
+	f.write('\n')
+    f.close()
+
+
+
 ### Main part
 
 #nE, mE, minE = read_E(sysname)
@@ -153,20 +202,14 @@ print '\nBasis: ', mBasis
 print '         ', map(GetAtomNumber, mBasis)
 print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
 
+#print CompareOrb(mMOC[1][1], mMOC[2][1])
+#print CompareOrb(mMOC[1][1], mMOC[2][5])
+
+TR = TraceAllOrb(mMOC, mE)
+
+PrintTRE(TR, mE, sysname)
+
 #print mOCC
 
 #print sys.getsizeof(mMOC)
 
-#fMO = open( '%s-E-MO.csv' % (sysname), 'w')
-#fMO.write(' N; E; HOMO; LUMO;')
-#for i in range(nOrb) : fMO.write(' E(MO%ld); OCC(MO%ld);' % (i, i) )
-#fMO.write('\n')
-#for i in range(nMO) :
-#    fMO.write(' %3ld; %.10f;' % (i+1, mE[i]) )
-#    HOMO, LUMO = find_HOMO_LUMO(mMO[i], mOCC[i])
-#    fMO.write(' %6f; %.6f;' % (HOMO, LUMO) )
-#    for j in range(len(mMO[i])) :
-###	fMO.write(' (%ld,%ld) %.6f; %ld;' % (i, j, mMO[i][j], mOCC[i][j]) )
-#	fMO.write(' %.6f; %ld;' % (mMO[i][j], mOCC[i][j]) )
-#    fMO.write('\n')
-#fMO.close()
