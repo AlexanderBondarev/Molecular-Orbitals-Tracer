@@ -57,7 +57,7 @@ def find_HOMO_LUMO(MO, mOCC) :
 def read_MOC(name):
     flagstr = 'MOLECULAR ORBITALS'
     morb = []; mocc = []; mE = []; step = 0;
-    mbasis = []; mSumE = [];
+    mbasis = []; mSumE = []; md = [];
     with open( '%s.out' % (name), 'r') as f:
 	line = f.readline()
 	while line:
@@ -67,6 +67,7 @@ def read_MOC(name):
 		mocc.append([])
 		mE.append([])
 		mSumE.append(0.0)
+		md.append(0.0)
 	    if flagstr in line :
 #		print step, line
 		morb[step-1] = []
@@ -116,8 +117,11 @@ def read_MOC(name):
 	    if 'FINAL SINGLE POINT ENERGY' in line :
 		mSumE[step-1] = float(line[26:])
 #		print step-1, ' E = ', float(line[26:])
+	    if '         *                 Bond (' in line :
+		md[step-1] = float(line[47:61])
+#		print step-1, ' d = ', float(line[47:61])
     f.close()
-    return step, len(morb[0]), morb, mE, mSumE, mocc, mbasis
+    return step, len(morb[0]), morb, mE, mSumE, mocc, mbasis, md
 
 #MOLECULAR ORBITALS
 #------------------
@@ -127,13 +131,22 @@ def read_MOC(name):
 #                  --------  --------  --------  --------  --------  --------
 #  0H   1s         0.001495 -0.212017 -0.385740  0.000000  0.000000  0.177599
 #  0H   2s        -0.003017 -0.007250 -0.061689 -0.000000  0.000000  1.235739
+
 #FINAL SINGLE POINT ENERGY      -100.314764415265
+
+#         *************************************************************
+#         *               RELAXED SURFACE SCAN STEP   1               *
+#         *                                                           *
+#         *                 Bond (  1,   0)  :   0.90000000           *
+#         *************************************************************
 
 
 def GetAtomNumber(s) :
     return int(re.findall(r'[0-9]+', s)[0])
 
-def CompareOrb(a,b) :
+def CompareOrb(a, b, aE, bE) :
+    D = aE - bE
+#    Q = D*D
     Q = 0.0
     for i in range(min(len(a), len(b))) :
 	D = abs(a[i])-abs(b[i])
@@ -142,24 +155,27 @@ def CompareOrb(a,b) :
 
 def TraceOrb(n, m, mE) :
     a = m[0][n]
+    aE = mE[0][n]
     mr = []
-    for step in range(0,len(m)) :
+    for step in range(1,len(m)) :
 	b = m[step][0]
-	Qmin = CompareOrb(a,b)
+	bE = mE[step][0]
+	Qmin = CompareOrb(a, b, aE, bE)
 	Nmin = 0
 	mQ = []
 	for i in range(1,len(m[step])) :
 	    b = m[step][i]
-	    Q = CompareOrb(a,b)
+	    bE = mE[step][0]
+	    Q = CompareOrb(a, b, aE, bE)
 	    mQ.append(Q)
 	    if Q<Qmin :
 		Nmin = i
 		Qmin = Q
-	
 	mr.append(Nmin)
 	a = m[step][Nmin]
 #	print step, n, Nmin, Qmin, mE[step][Nmin]
 #	print mQ
+    print mr
     return mr
 
 def TraceAllOrb(m, mE) :
@@ -168,18 +184,17 @@ def TraceAllOrb(m, mE) :
 	mr.append(TraceOrb(i, m, mE))
     return mr
 
-def PrintTRE(m, mE, sysname) :
+def PrintTRE(m, mE, mSumE, md, sysname) :
     f = open( '%s-trace.csv' % (sysname), 'w')
     f.write('Step;')
     for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
     f.write('\n')
     for step in range(len(mE)) :
-	f.write('%ld;' % (step+1))
+	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
 	for i in range(len(mE[0])) :
 	    f.write(' %f;' % (mE[step][i]))
 	f.write('\n')
     f.close()
-
 
 
 ### Main part
@@ -191,7 +206,7 @@ nMO, nOrb, mMO, mOCC = read_MO(sysname)
 #print nE, minE
 print nMO, nOrb
 
-nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis = read_MOC(sysname)
+nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = read_MOC(sysname)
 
 for i in range(len(mMOC)) :
     print '\nStep: %ld  E=%f' % (i+1, mSumE[i])
@@ -207,7 +222,7 @@ print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
 
 TR = TraceAllOrb(mMOC, mE)
 
-PrintTRE(TR, mE, sysname)
+PrintTRE(TR, mE, mSumE, md, sysname)
 
 #print mOCC
 
