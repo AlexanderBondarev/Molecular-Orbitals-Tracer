@@ -5,6 +5,7 @@ import os
 import re
 import math
 import numpy as np
+import pickle
 
 sysname = sys.argv[1]
 
@@ -24,7 +25,7 @@ def read_E(name):
 def read_MO(name):
     flagstr = 'ORBITAL ENERGIES'
     m = []; occ = []; n = 0; i = 0;
-    with open( '%s.out' % (name), 'r') as f:
+    with open( '%s/%s.out' % (name, name), 'r') as f:
 	line = f.readline()
 	while line:
 	    if 'SURFACE SCAN STEP' in line :
@@ -58,7 +59,7 @@ def read_MOC(name):
     flagstr = 'MOLECULAR ORBITALS'
     morb = []; mocc = []; mE = []; step = 0;
     mbasis = []; mSumE = []; md = [];
-    with open( '%s.out' % (name), 'r') as f:
+    with open( '%s/%s.out' % (name, name), 'r') as f:
 	line = f.readline()
 	while line:
 	    if 'SURFACE SCAN STEP' in line :
@@ -186,13 +187,23 @@ def TraceAllOrb(m, mE) :
 
 def PrintTRE(m, mE, mSumE, md, sysname) :
     f = open( '%s-trace.csv' % (sysname), 'w')
-    f.write('Step;')
+    f.write('Step; d; SumE;')
     for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
     f.write('\n')
     for step in range(len(mE)) :
 	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
 	for i in range(len(mE[0])) :
 	    f.write(' %f;' % (mE[step][i]))
+	f.write('\n')
+    f.close()
+    f = open( '%s-trace.map' % (sysname), 'w')
+    f.write('Step;')
+    for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
+    f.write('\n')
+    for step in range(len(mE)) :
+	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
+	for i in range(len(mE[0])) :
+	    f.write(' %ld;' % (m[step][i]))
 	f.write('\n')
     f.close()
 
@@ -221,6 +232,12 @@ print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
 #print CompareOrb(mMOC[1][1], mMOC[2][5])
 
 TR = TraceAllOrb(mMOC, mE)
+
+with open('data.pickle', 'wb') as f:
+    pickle.dump(TR, f)
+
+with open('data.pickle', 'rb') as f:
+    TR = pickle.load(f)
 
 PrintTRE(TR, mE, mSumE, md, sysname)
 
