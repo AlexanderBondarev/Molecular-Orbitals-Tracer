@@ -146,8 +146,8 @@ def GetAtomNumber(s) :
     return int(re.findall(r'[0-9]+', s)[0])
 
 def CompareOrb(a, b, aE, bE) :
-    D = aE - bE
-#    Q = D*D
+#    D = aE - bE
+#    Q = 10000.0*D*D
     Q = 0.0
     for i in range(min(len(a), len(b))) :
 	D = abs(a[i])-abs(b[i])
@@ -158,10 +158,12 @@ def TraceOrb(n, m, mE) :
     a = m[0][n]
     aE = mE[0][n]
     mr = []
+    Prev = 0
     for step in range(1,len(m)) :
 	b = m[step][0]
 	bE = mE[step][0]
 	Qmin = CompareOrb(a, b, aE, bE)
+	Q2 = Qmin
 	Nmin = 0
 	mQ = []
 	for i in range(1,len(m[step])) :
@@ -171,9 +173,15 @@ def TraceOrb(n, m, mE) :
 	    mQ.append(Q)
 	    if Q<Qmin :
 		Nmin = i
+		Q2 = Qmin
 		Qmin = Q
 	mr.append(Nmin)
 	a = m[step][Nmin]
+	if Prev>0 and abs(Prev-Nmin)>3 :
+	    print '*** ', Prev, Nmin, Qmin, Q2
+	    print ' ** ', m[step-1][n]
+	    print ' ** ', m[step][n]
+	Prev = Nmin
 #	print step, n, Nmin, Qmin, mE[step][Nmin]
 #	print mQ
     print mr
@@ -192,17 +200,15 @@ def PrintTRE(m, mE, mSumE, md, sysname) :
     f.write('\n')
     for step in range(len(mE)) :
 	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
-	for i in range(len(mE[0])) :
+	for i in range(len(mE[step])) :
 	    f.write(' %f;' % (mE[step][i]))
 	f.write('\n')
     f.close()
     f = open( '%s-trace.map' % (sysname), 'w')
-    f.write('Step;')
-    for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
-    f.write('\n')
-    for step in range(len(mE)) :
-	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
-	for i in range(len(mE[0])) :
+#    for step in range(len(m)) :
+#	for i in range(len(m[step])) :
+    for i in range(len(m[0])) :
+	for step in range(len(m)) :
 	    f.write(' %ld;' % (m[step][i]))
 	f.write('\n')
     f.close()
