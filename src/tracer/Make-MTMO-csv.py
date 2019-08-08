@@ -55,15 +55,31 @@ def find_HOMO_LUMO(MO, mOCC) :
 	    return MO[i], MO[i+1]
 	    break
 
-def read_MOC(name):
+def check_split(m) :
+    r = []
+    for s in m :
+	while '-' in s[2:] :
+	    p = s[1:].partition('-')
+	    head = s[0] + p[0]
+	    tail = p[1] + p[2]
+	    print ' *** check [%s][%s]' % (head, tail)
+	    r.append(head)
+	    s = tail
+	r.append(s)
+    return r
+
+def read_MOC(name) :
     flagstr = 'MOLECULAR ORBITALS'
     morb = []; mocc = []; mE = []; step = 0;
     mbasis = []; mSumE = []; md = [];
+    print 'Read MO coefficients on step:',
     with open( '%s/%s.out' % (name, name), 'r') as f:
 	line = f.readline()
 	while line:
 	    if 'SURFACE SCAN STEP' in line :
 		step = step + 1
+		print ' ', step,
+		sys.stdout.flush()
 		morb.append([])
 		mocc.append([])
 		mE.append([])
@@ -102,7 +118,7 @@ def read_MOC(name):
 			    a = m[0]
 			    b = m[1]
 			    mbasis.append('%s-%s' % (a, b))
-			    mc =  map(float, m[2:])
+			    mc =  map(float, check_split(m[2:]))
 #			    print a, b, mc
 			    for i in range(len(mc)) :
 				orb = mi[i]
@@ -122,6 +138,7 @@ def read_MOC(name):
 		md[step-1] = float(line[47:61])
 #		print step-1, ' d = ', float(line[47:61])
     f.close()
+    print ' '
     return step, len(morb[0]), morb, mE, mSumE, mocc, mbasis, md
 
 #MOLECULAR ORBITALS
@@ -146,11 +163,12 @@ def GetAtomNumber(s) :
     return int(re.findall(r'[0-9]+', s)[0])
 
 def CompareOrb(a, b, aE, bE) :
-#    D = aE - bE
-#    Q = 10000.0*D*D
+#    D = abs(aE - bE)
+#    Q = D*D
     Q = 0.0
     for i in range(min(len(a), len(b))) :
-	D = abs(a[i])-abs(b[i])
+#	D = abs(a[i]) - abs(b[i])
+	D = a[i]**2 - b[i]**2
 	Q = Q + D*D
     return Q
 
@@ -168,7 +186,7 @@ def TraceOrb(n, m, mE) :
 	mQ = []
 	for i in range(1,len(m[step])) :
 	    b = m[step][i]
-	    bE = mE[step][0]
+	    bE = mE[step][i]
 	    Q = CompareOrb(a, b, aE, bE)
 	    mQ.append(Q)
 	    if Q<Qmin :
@@ -182,14 +200,16 @@ def TraceOrb(n, m, mE) :
 	    print ' ** ', m[step-1][n]
 	    print ' ** ', m[step][n]
 	Prev = Nmin
-#	print step, n, Nmin, Qmin, mE[step][Nmin]
-#	print mQ
+	print step, n, Nmin, Qmin, mE[step][Nmin]
+	print mQ
     print mr
     return mr
 
 def TraceAllOrb(m, mE) :
     mr = []
-    for i in range(len(m[0][0])) :
+    nOrb = len(m[0][0])
+    for i in range(nOrb) :
+	print 'Trace of %ld/%ld orbital' % (i, nOrb)
 	mr.append(TraceOrb(i, m, mE))
     return mr
 
@@ -213,6 +233,15 @@ def PrintTRE(m, mE, mSumE, md, sysname) :
 	f.write('\n')
     f.close()
 
+def min_energy(m) :
+    r = m[0]
+    idx = 0
+    for i in range(len(m)/4) :
+	if r > m[i] :
+	    r = m[i]
+	    idx = i
+    return r, idx
+
 
 ### Main part
 
@@ -225,29 +254,31 @@ print nMO, nOrb
 
 nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = read_MOC(sysname)
 
-for i in range(len(mMOC)) :
-    print '\nStep: %ld  E=%f' % (i+1, mSumE[i])
-    for j in range(len(mMOC[i])) :
-	print j, mE[i][j], mOCC[i][j], mMOC[i][j]
+#for i in range(len(mMOC)) :
+#    print '\nStep: %ld  E=%f' % (i+1, mSumE[i])
+#    for j in range(len(mMOC[i])) :
+#	print j, mE[i][j], mOCC[i][j], mMOC[i][j]
+
+minE, minStep = min_energy(mSumE)
 
 print '\nBasis: ', mBasis
 print '         ', map(GetAtomNumber, mBasis)
-print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
 
 #print CompareOrb(mMOC[1][1], mMOC[2][1])
 #print CompareOrb(mMOC[1][1], mMOC[2][5])
 
 TR = TraceAllOrb(mMOC, mE)
 
-with open('data.pickle', 'wb') as f:
-    pickle.dump(TR, f)
+#with open('data.pickle', 'wb') as f:
+#    pickle.dump(TR, f)
 
-with open('data.pickle', 'rb') as f:
-    TR = pickle.load(f)
+#with open('data.pickle', 'rb') as f:
+#    TR = pickle.load(f)
 
 PrintTRE(TR, mE, mSumE, md, sysname)
 
 #print mOCC
 
 #print sys.getsizeof(mMOC)
-
+print 'nStep = %ld \nnOrb = %ld\n' % (nStep, nOrb)
+print ' min E[%ld] = %f on d=%f' % (minStep, minE, md[minStep])
