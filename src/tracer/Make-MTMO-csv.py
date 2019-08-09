@@ -165,17 +165,22 @@ def GetAtomNumber(s) :
 def CompareOrb(a, b, aE, bE) :
 #    D = abs(aE - bE)
 #    Q = D*D
-    Q = 0.0
+    Q1 = 0.0
     for i in range(min(len(a), len(b))) :
-#	D = abs(a[i]) - abs(b[i])
-	D = a[i]**2 - b[i]**2
-	Q = Q + D*D
-    return Q
+	D = a[i] - b[i]
+	Q1 = Q1 + D*D
+    Q2 = 0.0
+    for i in range(min(len(a), len(b))) :
+	D = a[i] + b[i]
+	Q2 = Q2 + D*D
+    if Q2<Q1 : return Q2
+    else : return Q1
 
 def TraceOrb(n, m, mE) :
     a = m[0][n]
     aE = mE[0][n]
     mr = []
+    mQr = []
     Prev = 0
     for step in range(1,len(m)) :
 	b = m[step][0]
@@ -194,14 +199,15 @@ def TraceOrb(n, m, mE) :
 		Q2 = Qmin
 		Qmin = Q
 	mr.append(Nmin)
+	mQr.append(Qmin)
 	a = m[step][Nmin]
 	if Prev>0 and abs(Prev-Nmin)>3 :
 	    print '*** ', Prev, Nmin, Qmin, Q2
 	    print ' ** ', m[step-1][n]
 	    print ' ** ', m[step][n]
 	Prev = Nmin
-	print step, n, Nmin, Qmin, mE[step][Nmin]
-	print mQ
+#	print step, n, Nmin, Qmin, mE[step][Nmin]
+    print mQr
     print mr
     return mr
 
