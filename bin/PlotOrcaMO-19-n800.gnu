@@ -24,6 +24,7 @@ plot 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:6 with lines ls 3 lw 4 
 unset multiplot
 
 set output "HF-B3LYP-SVP-MTMO-d009-809-n800-trace-all.png"
+#set nokey
 set multiplot
 set xrange [0.9:5.0]
 set yrange [-1.5:1.5]
