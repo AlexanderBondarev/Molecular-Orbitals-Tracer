@@ -7,10 +7,6 @@ import math
 import numpy as np
 import pickle
 
-sysname = sys.argv[1]
-
-nstep = int(re.findall(r'\-n\d+', sysname)[0][2:])
-
 def read_E(name):
     mE = []; n = 0;
     with open( '%s/%s.relaxscanscf.dat' % (name, name), 'r') as f:
@@ -162,9 +158,22 @@ def read_MOC(name) :
 def GetAtomNumber(s) :
     return int(re.findall(r'[0-9]+', s)[0])
 
+def CompareOrbBad(a, b, aE, bE) :
+    dE = 0.0
+#    dE = (aE - bE)/(abs(aE)+0.000001)
+    Q1 = 0.0
+    for i in range(min(len(a), len(b))) :
+	D = (a[i] - b[i])/(abs(a[i])+0.000001)
+	Q1 = Q1 + D*D
+    Q2 = 0.0
+    for i in range(min(len(a), len(b))) :
+	D = (a[i] + b[i])/(abs(a[i])+0.000001)
+	Q2 = Q2 + D*D
+    if Q2<Q1 : return Q2 + dE
+    else : return Q1 + dE
+
 def CompareOrb(a, b, aE, bE) :
-#    D = abs(aE - bE)
-#    Q = D*D
+#    dE = (aE - bE)/(abs(aE)+0.000001)
     Q1 = 0.0
     for i in range(min(len(a), len(b))) :
 	D = a[i] - b[i]
@@ -180,6 +189,7 @@ def TraceOrb(n, m, mE) :
     a = m[0][n]
     aE = mE[0][n]
     mr = []
+    mr.append(n)
     mQr = []
     Prev = 0
     for step in range(1,len(m)) :
@@ -187,7 +197,10 @@ def TraceOrb(n, m, mE) :
 	bE = mE[step][0]
 	Qmin = CompareOrb(a, b, aE, bE)
 	Q2 = Qmin
+	Q3 = Q2
 	Nmin = 0
+	N2 = Nmin
+	N3 = N2
 	mQ = []
 	for i in range(1,len(m[step])) :
 	    b = m[step][i]
@@ -195,20 +208,32 @@ def TraceOrb(n, m, mE) :
 	    Q = CompareOrb(a, b, aE, bE)
 	    mQ.append(Q)
 	    if Q<Qmin :
+		N3 = N2
+		N2 = Nmin
 		Nmin = i
+		Q3 = Q2
 		Q2 = Qmin
 		Qmin = Q
+	if Prev>0 and abs(Prev-Nmin)>3 :
+	    print '***    ', Prev, n, [Nmin, Qmin], [N2, Q2], [N3, Q3], aE
+	    if step>5 : print ' ** PE %10.6f  %10.6f  %10.6f' % (mE[step-5][Prev], mE[step-4][Prev], mE[step-3][Prev])
+	    print ' ** E  (%10.6f -> %10.6f)  %10.6f  %10.6f  %10.6f' % (mE[step-2][Prev],  mE[step-1][Prev], mE[step][Nmin], mE[step][N2], mE[step][N3])
+	    for i in range(len(m[step][n])) :
+		print ' **    %10.6f  %10.6f  %10.6f  %10.6f' % (m[step-1][Prev][i], m[step][Nmin][i], m[step][N2][i], m[step][N3][i])
+#	    print ' **    ', m[step-1][n]
+#	    print ' ** N1 ', m[step][Nmin]
+#	    print ' ** N2 ', m[step][N2]
+	    if abs(mE[step][Nmin]-aE) > abs(mE[step][N2]-aE) : Nmin = N2
+	    if abs(mE[step][Nmin]-aE) > abs(mE[step][N3]-aE) : Nmin = N3
+	    print '***** Select %ld *****' % (Nmin)
 	mr.append(Nmin)
 	mQr.append(Qmin)
 	a = m[step][Nmin]
-	if Prev>0 and abs(Prev-Nmin)>3 :
-	    print '*** ', Prev, Nmin, Qmin, Q2
-	    print ' ** ', m[step-1][n]
-	    print ' ** ', m[step][n]
+	aE = mE[step][Nmin]
 	Prev = Nmin
 #	print step, n, Nmin, Qmin, mE[step][Nmin]
-    print mQr
-    print mr
+#    print mQr
+#    print mr
     return mr
 
 def TraceAllOrb(m, mE) :
@@ -216,10 +241,13 @@ def TraceAllOrb(m, mE) :
     nOrb = len(m[0][0])
     for i in range(nOrb) :
 	print 'Trace of %ld/%ld orbital' % (i, nOrb)
+	sys.stdout.flush()
 	mr.append(TraceOrb(i, m, mE))
+#    mr.append(TraceOrb(36, m, mE))
     return mr
 
 def PrintTRE(m, mE, mSumE, md, sysname) :
+    print "LEN: ", len(mE[0]), len(m[0]), len(m)
     f = open( '%s-trace.csv' % (sysname), 'w')
     f.write('Step; d; SumE;')
     for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
@@ -227,15 +255,16 @@ def PrintTRE(m, mE, mSumE, md, sysname) :
     for step in range(len(mE)) :
 	f.write('%ld; %f; %f;' % (step+1, md[step], mSumE[step]))
 	for i in range(len(mE[step])) :
-	    f.write(' %f;' % (mE[step][i]))
+	    k = m[i][step]
+	    f.write(' %f;' % (mE[step][k]))
 	f.write('\n')
     f.close()
     f = open( '%s-trace.map' % (sysname), 'w')
 #    for step in range(len(m)) :
 #	for i in range(len(m[step])) :
-    for i in range(len(m[0])) :
-	for step in range(len(m)) :
-	    f.write(' %ld;' % (m[step][i]))
+    for step in range(len(m[0])) :
+	for i in range(len(m)) :
+	    f.write(' %ld;' % (m[i][step]))
 	f.write('\n')
     f.close()
 
@@ -248,17 +277,38 @@ def min_energy(m) :
 	    idx = i
     return r, idx
 
+def save_pickle(sysname):
+    global nMO, nOrb, mMO, mOCC, nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md
+    print 'Save to %s.pickle' % (sysname),
+    with open('%s/%s.pickle' % (sysname, sysname), 'wb') as f:
+	pickle.dump([nMO, nOrb, mMO, mOCC, nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md], f)
+    print ' complete'
+
+def load_pickle(sysname):
+    print 'Load from %s.pickle' % (sysname),
+    with open('%s/%s.pickle' % (sysname, sysname), 'rb') as f:
+	nMO, nOrb, mMO, mOCC, nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = pickle.load(f)
+    print ' complete'
+    return nMO, nOrb, mMO, mOCC, nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md
+
 
 ### Main part
 
-#nE, mE, minE = read_E(sysname)
-nMO, nOrb, mMO, mOCC = read_MO(sysname)
+sysname = sys.argv[1]
+
+nStep = int(re.findall(r'\-n\d+', sysname)[0][2:])
+
+if os.path.isfile('%s/%s.pickle' % (sysname, sysname)) :
+    nMO, nOrb, mMO, mOCC, nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = load_pickle(sysname)
+else :
+    #nE, mE, minE = read_E(sysname)
+    nMO, nOrb, mMO, mOCC = read_MO(sysname)
+    nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = read_MOC(sysname)
+    save_pickle(sysname)
 
 #print nstep
 #print nE, minE
 print nMO, nOrb
-
-nStep, nOrb, mMOC, mE, mSumE, mOCC, mBasis, md = read_MOC(sysname)
 
 #for i in range(len(mMOC)) :
 #    print '\nStep: %ld  E=%f' % (i+1, mSumE[i])
