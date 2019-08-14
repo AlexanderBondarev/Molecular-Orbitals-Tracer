@@ -247,7 +247,6 @@ def TraceAllOrb(m, mE) :
     return mr
 
 def PrintTRE(m, mE, mSumE, md, sysname) :
-    print "LEN: ", len(mE[0]), len(m[0]), len(m)
     f = open( '%s-trace.csv' % (sysname), 'w')
     f.write('Step; d; SumE;')
     for i in range(len(mE[0])) : f.write(' MO%ld;' % (i))
@@ -266,6 +265,32 @@ def PrintTRE(m, mE, mSumE, md, sysname) :
 	for i in range(len(m)) :
 	    f.write(' %ld;' % (m[i][step]))
 	f.write('\n')
+    f.close()
+
+def orb_to_str(m) :
+    global mBasis
+    lst = []
+    for i in range(len(m)) :
+	if m[i]> 0.000001 : lst.append(mBasis[i].split('-')[0])
+    s = ""
+    for x in set(lst) : s = '%s %s' % (s, x)
+#    for i in range(len(m)) :
+#	if m[i]> 0.000001 : s = '%s (%s %f)' % (s, mBasis[i], m[i])
+    return s
+
+def PrintTranform(minStep, mE, TR, m, sysname) :
+    nStep = len(mE)-1
+    f = open( '%s-transform.csv' % (sysname), 'w')
+    f.write('MinE_Orb; E_min; Last_Orb; E_last; Last_MO\n')
+    for i in range(len(mE[0])) :
+	MinE_Orb = TR[i][minStep]
+	E_min = mE[minStep][MinE_Orb]
+	Last_Orb = TR[i][nStep]
+	E_last = mE[nStep][Last_Orb]
+	f.write('%ld; %f; %ld; %f; ' % (MinE_Orb, E_min, Last_Orb, E_last))
+	f.write(orb_to_str(m[nStep][Last_Orb]))
+	f.write('\n')
+    f.write('\n')
     f.close()
 
 def min_energy(m) :
@@ -332,6 +357,8 @@ TR = TraceAllOrb(mMOC, mE)
 #    TR = pickle.load(f)
 
 PrintTRE(TR, mE, mSumE, md, sysname)
+
+PrintTranform(minStep, mE, TR, mMOC, sysname)
 
 #print mOCC
 
