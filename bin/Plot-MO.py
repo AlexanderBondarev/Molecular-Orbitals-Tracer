@@ -7,10 +7,6 @@ import math
 import numpy as np
 import pickle
 
-sysname = sys.argv[1]
-Orb = int(sys.argv[2])
-nStep = int(re.findall(r'\-n\d+', sysname)[0][2:])
-
 def mfloat(s): return float(s.strip())
 
 def read_E(name):
@@ -74,6 +70,11 @@ def plot_MO(sysname, Step, Orb, rOrb):
 
 ### Main part
 
+sysname = sys.argv[1]
+#Step = int(sys.argv[2])
+Orb = int(sys.argv[2])
+nStep = int(re.findall(r'\-n\d+', sysname)[0][2:])
+
 nStep, nOrb, mE, mEsum, mParam = read_E(sysname)
 nStep, nOrb, mOrb = read_map(sysname)
 
@@ -84,12 +85,12 @@ for i in range(nStep) :
     print "%4ld; %7.4f; %12.6f; %12.6f; %4ld;" % (i, mParam[i], mEsum[i], mE[i][Orb], mOrb[i][Orb])
 
 
-plot_MO(sysname, 5, Orb, mOrb[5][Orb])
-plot_MO(sysname, 6, Orb, mOrb[6][Orb])
-plot_MO(sysname, 7, Orb, mOrb[7][Orb])
-plot_MO(sysname, 8, Orb, mOrb[8][Orb])
-plot_MO(sysname, 7, Orb, 34)
-plot_MO(sysname, 8, Orb, 34)
+#plot_MO(sysname, 5, Orb, mOrb[5][Orb])
+#plot_MO(sysname, 6, Orb, mOrb[6][Orb])
+#plot_MO(sysname, 7, Orb, mOrb[7][Orb])
+#plot_MO(sysname, 8, Orb, mOrb[8][Orb])
+#plot_MO(sysname, 7, Orb, 34)
+#plot_MO(sysname, 8, Orb, 34)
 
 #cat get-mo.com | sed -e "s/MO/$NMO/" | ./orca_plot $Name/$Name.$N.gbw -i | tee get-mo.log
 #mv $Name.mo"$NMO"a.cube mo.cube
