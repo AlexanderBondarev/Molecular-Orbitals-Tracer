@@ -33,7 +33,11 @@ def read_tranform(name) :
 
 def get_frag_name(Frag) :
     for f in Frag :
-        if not f=='N2' : return "%s^+" % (f[:-1])
+	if f=='Ph+' : return "Ph^+"
+	if f=='4-MeOPh+' : return "4-MeOPh^+"
+	if f=='4-NO2Ph+' : return "4-NO_2Ph^+"
+    if f=='N2' : return f
+    else : return 'Compound'
 
 def write_gnuplot(name, prefix, MOr, EMOr, MOs, EMOs, Occ, Frag, Emin, Emax) :
     with open( '%s%s.gnu' % (name, prefix), 'w') as f:

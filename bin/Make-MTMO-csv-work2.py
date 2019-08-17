@@ -185,16 +185,6 @@ def CompareOrb(a, b, aE, bE) :
     if Q2<Q1 : return Q2
     else : return Q1
 
-def select_orbs_for_E(aE, mE) :
-    lst = []
-    lstE = []
-#    for i in range(1,len(mE)) :
-    for i in range(len(mE)) :
-        if abs(mE[i]-aE) < 0.05 :
-	    lst.append(i)
-	    lstE.append(mE[i])
-    return lst, lstE
-
 def TraceOrb(n, m, mE) :
     a = m[0][n]
     aE = mE[0][n]
@@ -205,18 +195,14 @@ def TraceOrb(n, m, mE) :
     for step in range(1,len(m)) :
 	b = m[step][0]
 	bE = mE[step][0]
-#	Qmin = CompareOrb(a, b, aE, bE)
-	Qmin = 1.0e10
+	Qmin = CompareOrb(a, b, aE, bE)
 	Q2 = Qmin
 	Q3 = Q2
 	Nmin = 0
 	N2 = Nmin
 	N3 = N2
 	mQ = []
-#	for i in range(1,len(m[step])) :
-	lst, lstE = select_orbs_for_E(aE, mE[step])
-#	print ' ==> Selected Orbitals ', aE, lst
-	for i in lst :
+	for i in range(1,len(m[step])) :
 	    b = m[step][i]
 	    bE = mE[step][i]
 	    Q = CompareOrb(a, b, aE, bE)
@@ -229,8 +215,7 @@ def TraceOrb(n, m, mE) :
 		Q2 = Qmin
 		Qmin = Q
 	if Prev>0 and abs(Prev-Nmin)>3 :
-	    print '***    step=', step, ' prev=', Prev, ' n=', n, [Nmin, Qmin], [N2, Q2], [N3, Q3], aE
-	    print ' ==> Selected Orbitals ', aE, lst, lstE
+	    print '***    ', Prev, n, [Nmin, Qmin], [N2, Q2], [N3, Q3], aE
 	    if step>5 : print ' ** PE %10.6f  %10.6f  %10.6f' % (mE[step-5][Prev], mE[step-4][Prev], mE[step-3][Prev])
 	    print ' ** E  (%10.6f -> %10.6f)  %10.6f  %10.6f  %10.6f' % (mE[step-2][Prev],  mE[step-1][Prev], mE[step][Nmin], mE[step][N2], mE[step][N3])
 	    for i in range(len(m[step][n])) :
@@ -296,8 +281,7 @@ def orb_to_str(m) :
 def PrintTranform(minStep, mE, TR, m, sysname) :
     nStep = len(mE)-1
     f = open( '%s-transform.csv' % (sysname), 'w')
-#    f.write('MinE_Orb; E_min; Last_Orb; E_last; Last_MO\n')
-    f.write('MinE_MO; E_MinE_MO; Last_MO; E_Last_MO; Frag_MO; E_Frag_MO; Occ; Frag; Localisation\n')
+    f.write('MinE_Orb; E_min; Last_Orb; E_last; Last_MO\n')
     for i in range(len(mE[0])) :
 	MinE_Orb = TR[i][minStep]
 	E_min = mE[minStep][MinE_Orb]
