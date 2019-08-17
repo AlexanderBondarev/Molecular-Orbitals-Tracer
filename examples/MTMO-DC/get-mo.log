@@ -1,14 +1,14 @@
 Entering interactive generation of plots ...
-GBW-file   : Ph-N2+-B3LYPG-6-31G_dp-MTMO-d009-169-n800/Ph-N2+-B3LYPG-6-31G_dp-MTMO-d009-169-n800.008.gbw
+GBW-file   : Ph+-B3LYP-6-31G_dp-MTMO.gbw
 
  ... the gbw file was succesfully read
  ... the orbital plot files will be in binary format
- ... the output filenames are Ph-N2+-B3LYPG-6-31G_dp-MTMO-d009-169-n800.moxy.plt
+ ... the output filenames are Ph+-B3LYP-6-31G_dp-MTMO.moxy.plt
      (x=no of the MO y='a' for op=0 and b` for op=1
  ... an XYZ-file has been saved for gOpenMol
 
        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-       ===>>> Number of available orbitals : 137
+       ===>>> Number of available orbitals : 109
        ===>>> Number of operators          : 1
        !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Current-settings:
@@ -17,9 +17,9 @@ PlotType       ... MO-PLOT
 MO/Operator    ... 0 0
 Format         ... Grid3D/Binary
 Resolution     ... 40 40 40
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -35,12 +35,12 @@ Boundaries     ...   -14.009661    11.433436 (x direction)
 Enter a number: Enter MO: Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 0
+MO/Operator    ... 22 0
 Format         ... Grid3D/Binary
 Resolution     ... 40 40 40
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -65,12 +65,12 @@ Enter a number: File-Format is presently: 5
 Enter Format: Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 0
+MO/Operator    ... 22 0
 Format         ... Grid3d/Cube
 Resolution     ... 40 40 40
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -86,12 +86,12 @@ Boundaries     ...   -14.009661    11.433436 (x direction)
 Enter a number: Enter NGRID: Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 0
+MO/Operator    ... 22 0
 Format         ... Grid3d/Cube
 Resolution     ... 80 80 80
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -107,12 +107,12 @@ Boundaries     ...   -14.009661    11.433436 (x direction)
 Enter a number: Enter OP: Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 0
+MO/Operator    ... 22 0
 Format         ... Grid3d/Cube
 Resolution     ... 80 80 80
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -126,17 +126,17 @@ Boundaries     ...   -14.009661    11.433436 (x direction)
       10 - Generate the plot
       11 - exit this program
 Enter a number:                  *** PLOTTING FINISHED ***
- Output file: Ph-N2+-B3LYPG-6-31G_dp-MTMO-d009-169-n800.mo34a.cube
+ Output file: Ph+-B3LYP-6-31G_dp-MTMO.mo22a.cube
 --------------------------------------------------------------------------
 Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 0
+MO/Operator    ... 22 0
 Format         ... Grid3d/Cube
 Resolution     ... 80 80 80
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
@@ -152,12 +152,12 @@ Boundaries     ...   -14.009661    11.433436 (x direction)
 Enter a number: Enter OP: Current-settings:
 
 PlotType       ... MO-PLOT
-MO/Operator    ... 34 1
+MO/Operator    ... 22 1
 Format         ... Grid3d/Cube
 Resolution     ... 80 80 80
-Boundaries     ...   -14.009661    11.433436 (x direction)
-                      -8.201823    11.532115 (y direction)
-                     -10.442569    10.028447 (z direction)
+Boundaries     ...   -14.355723     6.917209 (x direction)
+                      -8.222336    11.567884 (y direction)
+                     -10.494050    10.040509 (z direction)
 
        1 - Enter type of plot
        2 - Enter no of orbital to plot
