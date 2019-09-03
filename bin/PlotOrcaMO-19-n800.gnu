@@ -27,7 +27,7 @@ set output "HF-B3LYP-SVP-MTMO-d009-809-n800-trace-all.png"
 #set nokey
 set multiplot
 set xrange [0.9:5.0]
-set yrange [-1.5:1.5]
+set yrange [-1.5:4.27]
 #set yrange [-0.5:0]
 #set xlabel "Distance C-N, A" font "Helvetica-Bold,30"
 set xlabel "Step" font "Helvetica-Bold,30"
@@ -46,7 +46,13 @@ plot 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:4 with lines ls 1 lw 4 
  'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:11 with lines ls 8 lw 4 ti "8", \
  'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:12 with lines ls 9 lw 4 ti "9", \
  'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:13 with lines ls 10 lw 4 ti "10", \
- 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:14 with lines ls 11 lw 4 ti "11"
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:14 with lines ls 11 lw 4 ti "11", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:15 with lines ls 11 lw 4 ti "12", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:16 with lines ls 11 lw 4 ti "13", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:17 with lines ls 11 lw 4 ti "14", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:18 with lines ls 11 lw 4 ti "15", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:19 with lines ls 11 lw 4 ti "16", \
+ 'HF-B3LYP-SVP-MTMO-d009-809-n800-trace.csv' using 2:20 with lines ls 11 lw 4 ti "17"
 
 quit
 
