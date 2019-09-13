@@ -62,7 +62,7 @@ def PrintTRE(m, mE, mSumE, md, sysname) :
 	f.write('\n')
     f.close()
 
-def plot_MO(sysname, Step, Orb, rOrb):
+def plot_MO(sysname, Step, Orb, rOrb, mE, mEsum, mParam):
     print '*** step=%04ld  orb=%ld  rorb=%ld' % (Step, Orb, rOrb)
 #    os.system( 'cat get-mo.com | sed -e "s/MO/%ld/" | ./orca_plot-3.0.2 %s/%s.%03d.gbw -i | tee get-mo.log' % (rOrb, sysname, sysname, Step) )
     os.system( 'cat get-mo.com | sed -e "s/MO/%ld/" | ./orca_plot-4.1.0 %s/%s.%03d.gbw -i | tee get-mo.log' % (rOrb, sysname, sysname, Step) )
@@ -73,7 +73,10 @@ def plot_MO(sysname, Step, Orb, rOrb):
     os.system( 'cp %s/%s.%03ld.xyz mol.xyz' % (sysname, sysname, Step) )
     os.system( 'pymol -c plot-mo.pml' )
     os.system( 'mkdir -p %s/mo%ld' % (sysname, Orb) )
-    os.system( 'mv mo.png %s/mo%ld/mo%ld.%03ld.png' % (sysname, Orb, Orb, Step) )
+    st = '\'Orbital=%ld   Step=%ld   d=%.3f   E=%.6f   Eorb=%.6f\'' % (rOrb, Step, mParam[Step], mEsum[Step], mE[Step][rOrb])
+    os.system( 'convert -pointsize 18 -fill black -draw \"text 170,35 %s\" mo.png mo-txt.png' % (st) )
+    os.system( 'mv mo-txt.png %s/mo%ld/mo%ld.%03ld.png' % (sysname, Orb, Orb, Step) )
+    os.system( 'rm mo.png' )
     os.system( 'rm mo.cube' )
     os.system( 'rm mol.xyz' )
 
@@ -97,6 +100,6 @@ else : Step = nStep
 for i in range(1,Step) :
     print "Orb=%ld/%ld  Step=%ld/%ld" % (Orb, nOrb, i, nStep)
 #    print "%4ld; %7.4f; %12.6f; %12.6f; %4ld;" % (i, mParam[i], mEsum[i], mE[i][Orb], mOrb[i][Orb])
-    plot_MO(sysname, i, Orb, mOrb[i][Orb])
+    plot_MO(sysname, i, Orb, mOrb[i][Orb], mE, mEsum, mParam)
 
 #plot_MO(sysname, Step, Orb, mOrb[Step][Orb])

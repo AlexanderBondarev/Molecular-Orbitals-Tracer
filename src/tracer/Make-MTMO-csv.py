@@ -185,15 +185,16 @@ def CompareOrb(a, b, aE, bE) :
     if Q2<Q1 : return Q2
     else : return Q1
 
-def select_orbs_for_E(aE, mE) :
+def select_orbs_for_E(aE, mE, dE=0.05) :
     lst = []
     lstE = []
 #    for i in range(1,len(mE)) :
     for i in range(len(mE)) :
-        if abs(mE[i]-aE) < 0.05 :
+        if abs(mE[i]-aE) < dE :
 	    lst.append(i)
 	    lstE.append(mE[i])
-    return lst, lstE
+    if len(lst)<1 : return select_orbs_for_E(aE, mE, dE*2)
+    else : return lst, lstE
 
 def TraceOrb(n, m, mE) :
     a = m[0][n]

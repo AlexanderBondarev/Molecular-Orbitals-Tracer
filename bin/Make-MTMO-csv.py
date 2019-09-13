@@ -1,1 +1,0 @@
-/Oasis/ScienceWork/Science-Software-dev/Molecular-Orbitals-Tracer/src/tracer/Make-MTMO-csv.py

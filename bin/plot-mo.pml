@@ -1,1 +1,0 @@
-/Oasis/ScienceWork/Science-Software-dev/Molecular-Orbitals-Tracer/examples/MTMO-DC/plot-mo.pml
