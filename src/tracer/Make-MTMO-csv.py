@@ -287,9 +287,15 @@ def orb_to_str(m) :
     global mBasis
     lst = []
     for i in range(len(m)) :
-	if m[i]> 0.000001 : lst.append(mBasis[i].split('-')[0])
+	if m[i]> 0.000011 : lst.append(mBasis[i].split('-')[0])
     s = ""
     for x in set(lst) : s = '%s %s' % (s, x)
+#    lst = []
+#    s = '%s   ' % s
+#    for i in range(len(m)) :
+#	if m[i]> 0.000011 : lst.append('[%s %f]' % (mBasis[i].split('-')[0], m[i]) )
+#    for x in set(lst) : s = '%s %s' % (s, x)
+
 #    for i in range(len(m)) :
 #	if m[i]> 0.000001 : s = '%s (%s %f)' % (s, mBasis[i], m[i])
     return s
